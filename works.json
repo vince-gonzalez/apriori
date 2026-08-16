@@ -1,0 +1,547 @@
+{
+ "author": {
+  "name": "Vincent Gonzalez",
+  "orcid": "0009-0005-3640-014X",
+  "wikidata": "Q140936504"
+ },
+ "works": [
+  {
+   "zenodo": 20013337,
+   "title": "Competitive Context as a Jailbreak Accelerant: Inter-Model Rivalry as a Novel Adversarial Vector in Large Language Model Safety",
+   "doi": "10.5281/zenodo.20013337",
+   "concept_doi": "10.5281/zenodo.20013336",
+   "date": "2026-05-03",
+   "type": "publication",
+   "wikidata": "Q141103942",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1037/h0025589",
+    "10.1037/h0026570",
+    "10.1145/3658644.3670388",
+    "10.52202/075280-3508",
+    "arXiv:2204.05862",
+    "arXiv:2211.03540",
+    "arXiv:2211.09527",
+    "arXiv:2306.15447",
+    "arXiv:2307.15043"
+   ]
+  },
+  {
+   "zenodo": 21302924,
+   "title": "Potica in America: Naming, Transmission, and the Printed Record of a Diaspora Pastry",
+   "doi": "10.5281/zenodo.21302924",
+   "concept_doi": "10.5281/zenodo.21302923",
+   "date": "2026-07-11",
+   "type": "publication",
+   "wikidata": "Q141103944",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": []
+  },
+  {
+   "zenodo": 21310578,
+   "title": "A Procedural Method for Generating Pseudoisochromatic Plates in the Browser, and the Calibration Limits of Screen-Based Colour-Vision Screening",
+   "doi": "10.5281/zenodo.21310578",
+   "concept_doi": "10.5281/zenodo.21310577",
+   "date": "2026-07-11",
+   "type": "publication",
+   "wikidata": "Q140936236",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1002/(SICI",
+    "10.1016/j.displa.2004.09.006",
+    "10.1109/TVCG.2009.113",
+    "10.1111/aos.15103",
+    "10.1111/j.1444-0938.2004.tb05057.x",
+    "10.1364/JOSA.33.000568",
+    "10.1364/JOSAA.14.002647",
+    "10.1364/josaa.29.000313"
+   ]
+  },
+  {
+   "zenodo": 21311369,
+   "title": "OpticQuiz PPPG — Procedural Pseudoisochromatic Plate Generator (source code)",
+   "doi": "10.5281/zenodo.21311369",
+   "concept_doi": "10.5281/zenodo.21311368",
+   "date": "2026-07-11",
+   "type": "software",
+   "wikidata": "Q140936313",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [],
+   "note": "item exists but its P356 is the VERSION doi 10.5281/zenodo.21311369, not the concept doi -- diverges from the convention every other item uses"
+  },
+  {
+   "zenodo": 21618222,
+   "title": "An independent exact verification of an 11948-point kissing configuration in 19 dimensions",
+   "doi": "10.5281/zenodo.21618222",
+   "concept_doi": "10.5281/zenodo.21618221",
+   "date": "2026-07-27",
+   "type": "software",
+   "wikidata": "Q141103945",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": []
+  },
+  {
+   "zenodo": 21629399,
+   "title": "First-Return Walks on Vertex-Transitive Graphs",
+   "doi": "10.5281/zenodo.21629399",
+   "concept_doi": "10.5281/zenodo.21629398",
+   "date": "2026-07-27",
+   "type": "publication",
+   "wikidata": "Q141103946",
+   "oeis": [
+    "A398262",
+    "A398309",
+    "A398310"
+   ],
+   "source": "C:\\Users\\Admin\\OneDrive\\Desktop\\universal-cover\\papers\\FIRST_RETURN.md",
+   "exclude_reason": null,
+   "cites": [
+    "10.1007/978-1-4613-0163-9",
+    "10.1016/0024-3795(94)00245-9",
+    "10.1017/cbo9780511801655",
+    "10.1515/9780691197944-009"
+   ]
+  },
+  {
+   "zenodo": 21701081,
+   "title": "A certified opaque barrier for the unit disc of length 4.79984937…",
+   "doi": "10.5281/zenodo.21701081",
+   "concept_doi": "10.5281/zenodo.21568684",
+   "date": "2026-07-30",
+   "type": "publication",
+   "wikidata": "Q141103947",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1007/978-1-4612-0963-8",
+    "10.1017/cbo9780511550447",
+    "10.1080/00029890.1986.11971948",
+    "10.4064/ap-44-3-249-266",
+    "arXiv:2509.08842"
+   ]
+  },
+  {
+   "zenodo": 21701339,
+   "title": "A machine-checked proof of opacity for a Faber–Mycielski barrier",
+   "doi": "10.5281/zenodo.21701339",
+   "concept_doi": "10.5281/zenodo.21701338",
+   "date": "2026-07-30",
+   "type": "publication",
+   "wikidata": "Q141103948",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1017/cbo9780511550447",
+    "10.1080/00029890.1986.11971948",
+    "10.1145/3372885.3373824",
+    "10.5281/zenodo.21568685",
+    "arXiv:2509.08842"
+   ]
+  },
+  {
+   "zenodo": 21708693,
+   "title": "The added-vector code of the odd-sign construction is maximal in dimensions 20 and 21",
+   "doi": "10.5821/zenodo.21702302",
+   "concept_doi": "10.5281/zenodo.21702301",
+   "date": "2026-07-30",
+   "type": "publication",
+   "wikidata": "Q141103949",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1016/s0924-6509(08)x7030-8",
+    "arXiv:2603.10425"
+   ]
+  },
+  {
+   "zenodo": 21715685,
+   "title": "Rigorous areas for the classical Lebesgue universal covering ladder",
+   "doi": "10.5281/zenodo.21715685",
+   "concept_doi": "10.5281/zenodo.21701519",
+   "date": "2026-07-31",
+   "type": "publication",
+   "wikidata": "Q141103950",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1007/bf00147549",
+    "10.1090/dol/011",
+    "10.1142/s0218195905001828",
+    "arXiv:1502.01251",
+    "arXiv:1810.10089",
+    "arXiv:2606.04458"
+   ]
+  },
+  {
+   "zenodo": 21716006,
+   "title": "Exact calculator for Norton's abundancy bound a(j) on odd perfect numbers",
+   "doi": "10.5281/zenodo.21716006",
+   "concept_doi": "10.5281/zenodo.21716005",
+   "date": "2026-07-31",
+   "type": "software",
+   "wikidata": "Q141103951",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": []
+  },
+  {
+   "zenodo": 21729549,
+   "title": "Certified upper bounds for Fejes Tóth's point-goalie problem at n = 4 and 5",
+   "doi": "10.5281/zenodo.21729549",
+   "concept_doi": "10.5281/zenodo.21729548",
+   "date": "2026-08-01",
+   "type": "publication",
+   "wikidata": "Q141103952",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1007/bf02187780",
+    "10.1007/bf02574006",
+    "10.1007/s00039-017-0427-6",
+    "10.1007/s00454-003-2713-3",
+    "10.1016/0012-365x(80)90111-9",
+    "10.1112/plms/s3-45.3.456",
+    "10.5281/zenodo.21701081",
+    "arXiv:1005.2218",
+    "arXiv:2110.04376"
+   ]
+  },
+  {
+   "zenodo": 21729805,
+   "title": "Maximality of the added-vector codes in the Cohn-Li kissing constructions",
+   "doi": "10.5281/zenodo.21729805",
+   "concept_doi": "10.5281/zenodo.21729367",
+   "date": "2026-08-01",
+   "type": "publication",
+   "wikidata": "Q141103953",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1016/s0924-6509(08)x7030-8",
+    "arXiv:2603.10425"
+   ]
+  },
+  {
+   "zenodo": 21777108,
+   "title": "A congruence obstruction on the Euler prime of an odd perfect number",
+   "doi": "10.5281/zenodo.21777108",
+   "concept_doi": "10.5281/zenodo.21777107",
+   "date": "2026-08-03",
+   "type": "publication",
+   "wikidata": "Q141103954",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1090/S0025-5718-07-01990-4",
+    "10.1090/S0025-5718-2012-02563-4",
+    "https://cs.uwaterloo.ca/journals/JIS/VOL10/Holdener/holdener7.html"
+   ]
+  },
+  {
+   "zenodo": 21866855,
+   "title": "Where Formal Libraries Spend Their Axioms: A Cross-Foundation Measurement, and an Avoidable Classical Dependency in Lean's omega",
+   "doi": "10.5281/zenodo.21866855",
+   "concept_doi": "10.5281/zenodo.21769846",
+   "date": "2026-08-10",
+   "type": "publication",
+   "wikidata": "Q141103955",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "arXiv:2604.22519",
+    "arXiv:2604.24797",
+    "arXiv:2606.28572"
+   ]
+  },
+  {
+   "zenodo": 21866882,
+   "title": "Why Tactic-Level Rates Cannot Attribute Classical Dependencies in Lean",
+   "doi": "10.5281/zenodo.21866882",
+   "concept_doi": "10.5281/zenodo.21853489",
+   "date": "2026-08-10",
+   "type": "publication",
+   "wikidata": "Q141103956",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.5281/zenodo.21769846",
+    "arXiv:2604.22519",
+    "arXiv:2604.24797",
+    "arXiv:2606.28572"
+   ]
+  },
+  {
+   "zenodo": 21876791,
+   "title": "Pseudoisochromatic plate design type is recoverable from delivered colour and dot geometry alone",
+   "doi": "10.5281/zenodo.21876791",
+   "concept_doi": "10.5281/zenodo.21876790",
+   "date": "2026-08-10",
+   "type": "publication",
+   "wikidata": null,
+   "oeis": [],
+   "source": null,
+   "exclude_reason": "under review at an academic journal; no public Wikidata item until that resolves",
+   "cites": [
+    "10.1017/S0952523804213475",
+    "10.5281/zenodo.21310578"
+   ]
+  },
+  {
+   "zenodo": 21883964,
+   "title": "Which Constant Is Responsible? Dominator Analysis of Classical Dependence in Mathlib",
+   "doi": "10.5281/zenodo.21883964",
+   "concept_doi": "10.5281/zenodo.21883963",
+   "date": "2026-08-11",
+   "type": "publication",
+   "wikidata": "Q141103957",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1145/357062.357071",
+    "10.5281/zenodo.21769846",
+    "10.5281/zenodo.21853489",
+    "arXiv:2604.22519",
+    "arXiv:2604.24797",
+    "arXiv:2606.28572"
+   ]
+  },
+  {
+   "zenodo": 21913737,
+   "title": "Kernel Trust Profile 0.1: a machine-readable declaration of what a body of machine-checked mathematics rests on",
+   "doi": "10.5281/zenodo.21913737",
+   "concept_doi": "10.5281/zenodo.21913736",
+   "date": "2026-08-13",
+   "type": "publication",
+   "wikidata": "Q141103958",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.5281/zenodo.21900625"
+   ]
+  },
+  {
+   "zenodo": 21922825,
+   "title": "The gonzalgo Indexes: standing measurements of what formal mathematical libraries rest on",
+   "doi": "10.5281/zenodo.21922825",
+   "concept_doi": "10.5281/zenodo.21900625",
+   "date": "2026-08-13",
+   "type": "dataset",
+   "wikidata": "Q141103959",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": []
+  },
+  {
+   "zenodo": 21937797,
+   "title": "Voynichese as a Structured, Positionally Constrained System: A Null-Tested Characterization Across Transcription Traditions",
+   "doi": "10.5281/zenodo.21937797",
+   "concept_doi": "10.5281/zenodo.21937796",
+   "date": "2026-08-14",
+   "type": "publication",
+   "wikidata": "Q141103911",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1080/0161-110491892755",
+    "10.1080/01611194.2016.1206753",
+    "10.1080/01611194.2019.1596999",
+    "10.1146/annurev-linguistics-011619-030613",
+    "10.1371/journal.pone.0066344",
+    "arXiv:2509.10573",
+    "arXiv:2604.19762",
+    "arXiv:2604.25979",
+    "https://aclanthology.org/W11-1511/",
+    "https://ceur-ws.org/Vol-3313/paper10.pdf",
+    "https://ceur-ws.org/Vol-3313/paper4.pdf",
+    "https://ic.unicamp.br/~stolfi/EXPORT/papers/by-tag/papers/voynich/techreps/02-words/words-report.pdf",
+    "https://www.voynich.nu/"
+   ]
+  },
+  {
+   "zenodo": 21937799,
+   "title": "Positional Rigidity in the Voynich Manuscript: Cross-Tradition Replication Without Glyph Mapping",
+   "doi": "10.5281/zenodo.21937799",
+   "concept_doi": "10.5281/zenodo.21937798",
+   "date": "2026-08-14",
+   "type": "publication",
+   "wikidata": "Q141103912",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1146/annurev-linguistics-011619-030613",
+    "10.5281/zenodo.21937797",
+    "arXiv:2509.10573",
+    "arXiv:2604.19762",
+    "arXiv:2604.25979",
+    "https://aclanthology.org/W11-1511/",
+    "https://ceur-ws.org/Vol-3313/paper10.pdf",
+    "https://ic.unicamp.br/~stolfi/EXPORT/papers/by-tag/papers/voynich/techreps/02-words/words-report.pdf",
+    "https://www.voynich.nu/"
+   ]
+  },
+  {
+   "zenodo": 21937801,
+   "title": "One Grammar, a Continuous Register Dial: Section, Locus, and Onset Variation in Voynichese",
+   "doi": "10.5281/zenodo.21937801",
+   "concept_doi": "10.5281/zenodo.21937800",
+   "date": "2026-08-14",
+   "type": "publication",
+   "wikidata": "Q141103913",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1146/annurev-linguistics-011619-030613",
+    "10.5281/zenodo.21937797",
+    "arXiv:2509.10573",
+    "arXiv:2604.19762",
+    "arXiv:2604.25979",
+    "https://aclanthology.org/W11-1511/",
+    "https://ceur-ws.org/Vol-3313/paper10.pdf",
+    "https://www.voynich.nu/"
+   ]
+  },
+  {
+   "zenodo": 21937803,
+   "title": "Compositional Reuse and Grade Operators in Voynichese",
+   "doi": "10.5281/zenodo.21937803",
+   "concept_doi": "10.5281/zenodo.21937802",
+   "date": "2026-08-14",
+   "type": "publication",
+   "wikidata": "Q141103914",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1146/annurev-linguistics-011619-030613",
+    "10.5281/zenodo.21937797",
+    "arXiv:2509.10573",
+    "arXiv:2604.19762",
+    "arXiv:2604.25979",
+    "https://aclanthology.org/W11-1511/",
+    "https://www.voynich.nu/"
+   ]
+  },
+  {
+   "zenodo": 21937805,
+   "title": "Currier A and B as Degrees of One System: A Gradient Model of Voynichese Variation",
+   "doi": "10.5281/zenodo.21937805",
+   "concept_doi": "10.5281/zenodo.21937804",
+   "date": "2026-08-14",
+   "type": "publication",
+   "wikidata": "Q141103915",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1146/annurev-linguistics-011619-030613",
+    "10.1371/journal.pone.0066344",
+    "10.5281/zenodo.21937797",
+    "arXiv:2509.10573",
+    "arXiv:2604.19762",
+    "arXiv:2604.25979",
+    "https://ceur-ws.org/Vol-3313/paper10.pdf",
+    "https://www.voynich.nu/"
+   ]
+  },
+  {
+   "zenodo": 21937807,
+   "title": "How Voynichometry Kills Its Own Mirages: Nulls, Positive Controls, and the Limits of Structural Inference",
+   "doi": "10.5281/zenodo.21937807",
+   "concept_doi": "10.5281/zenodo.21937806",
+   "date": "2026-08-14",
+   "type": "publication",
+   "wikidata": "Q141103916",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1080/0161-110491892755",
+    "10.1080/01611194.2016.1206753",
+    "10.1080/01611194.2019.1596999",
+    "10.1371/journal.pone.0066344",
+    "10.5281/zenodo.21937797",
+    "arXiv:2509.10573",
+    "arXiv:2604.19762",
+    "arXiv:2604.25979",
+    "https://ceur-ws.org/Vol-3313/paper4.pdf"
+   ]
+  },
+  {
+   "zenodo": 21937811,
+   "title": "A Transcription-Independent Structural Validation Strategy for D'Imperio Voynich Witnesses: Protocol and Execution Report",
+   "doi": "10.5281/zenodo.21937811",
+   "concept_doi": "10.5281/zenodo.21937810",
+   "date": "2026-08-14",
+   "type": "publication",
+   "wikidata": "Q141103917",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1080/0161-119591883737",
+    "10.5281/zenodo.21937797",
+    "arXiv:2509.10573",
+    "arXiv:2604.19762",
+    "arXiv:2604.25979",
+    "https://www.voynich.nu/"
+   ]
+  },
+  {
+   "zenodo": 21946925,
+   "title": "Voynichometry: analysis code and replication package",
+   "doi": "10.5281/zenodo.21946925",
+   "concept_doi": "10.5281/zenodo.21946924",
+   "date": "2026-08-15",
+   "type": "software",
+   "wikidata": "Q141103918",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": []
+  },
+  {
+   "zenodo": 21951050,
+   "title": "Eligibility Discriminates Among Theorems and Not Among the Constants They Rest On",
+   "doi": "10.5281/zenodo.21951050",
+   "concept_doi": "10.5281/zenodo.21884471",
+   "date": "2026-08-15",
+   "type": "publication",
+   "wikidata": "Q141103960",
+   "oeis": [],
+   "source": null,
+   "exclude_reason": null,
+   "cites": [
+    "10.1145/357062.357071",
+    "10.5281/zenodo.21769846",
+    "10.5281/zenodo.21853489",
+    "arXiv:2606.28572"
+   ]
+  }
+ ]
+}
