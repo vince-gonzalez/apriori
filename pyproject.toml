@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "authorecon"
+version = "0.1.0"
+description = "Gates that run before research output leaves your hands: agent artifacts, machine-written prose, unlicensed code, duplicate deposits."
+readme = "README-pypi.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Vincent Gonzalez", email = "vincegonzalez@me.com" }]
+keywords = [
+    "research software",
+    "submission hygiene",
+    "preprint",
+    "Zenodo",
+    "reproducibility",
+    "research metadata",
+    "static analysis",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/zengineco/apriori"
+Source = "https://github.com/zengineco/apriori"
+Issues = "https://github.com/zengineco/apriori/issues"
+
+[project.scripts]
+submission-scrub = "authorecon.submission_scrub:main"
+slop-scan = "authorecon.slop_scan:main"
+software-inventory = "authorecon.software_inventory:main"
+zenodo-precheck = "authorecon.zenodo_precheck:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
