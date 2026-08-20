@@ -27,6 +27,7 @@ import ast
 import json
 import re
 import subprocess
+import warnings
 import sys
 from pathlib import Path
 
@@ -62,10 +63,18 @@ def licence_of(root: Path):
 
 
 def describe(path: Path):
-    """First docstring line, entry-point flag, and definition counts."""
+    """First docstring line, entry-point flag, and definition counts.
+
+    Parsing is done with warnings suppressed. `ast.parse` reports things like an
+    invalid escape sequence from the file being read, and those belong to the
+    code under inspection rather than to this tool -- printing them makes every
+    run of an inventory look like the inventory is broken.
+    """
     try:
         src = path.read_text(encoding="utf-8", errors="replace")
-        tree = ast.parse(src)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            tree = ast.parse(src)
     except Exception:
         return dict(doc="(unparsed)", entry=False, funcs=0, classes=0,
                     lines=0, argparse=False)

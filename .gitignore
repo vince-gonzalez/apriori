@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 state.json
 stats.json
+dist/
+build/
+*.egg-info/
