@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+title: "authorecon: bibliographic reconciliation and submission hygiene"
+message: "If you use this software, please cite it using these metadata."
+type: software
+authors:
+  - given-names: Vincent
+    family-names: Gonzalez
+    orcid: "https://orcid.org/0009-0005-3640-014X"
+    email: vincegonzalez@me.com
+repository-code: "https://github.com/zengineco/apriori"
+abstract: >-
+  Two things a research programme needs and rarely has. `authorecon` reconciles
+  what Zenodo, Wikidata, OpenAlex and the OEIS each record about the same body
+  of work and reports where they disagree, which is how a self-citation
+  masquerading as an external one gets caught. The `tools/` directory holds the
+  gates: `submission_scrub.py` refuses to let a manuscript reach an editor with
+  agent artifacts or stray comments still in the source; `slop_scan.py` looks
+  for the structural habits that read as machine-written — contrastive pairs,
+  announced candour, padded triads, restatement openers, em-dash density —
+  which a word-list scan cannot find; and `software_inventory.py` reports
+  licence, citation metadata and per-module documentation state across a set of
+  repositories, so the gap between a script and something citable is a list
+  rather than an impression.
+keywords:
+  - bibliographic reconciliation
+  - research software
+  - ORCID
+  - Zenodo
+  - Wikidata
+  - OpenAlex
+  - submission hygiene
+  - research metadata
+license: MIT
