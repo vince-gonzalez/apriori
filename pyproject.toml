@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "authorecon"
-version = "0.1.0"
-description = "Gates that run before research output leaves your hands: agent artifacts, machine-written prose, unlicensed code, duplicate deposits."
+version = "0.2.0"
+description = "Reconcile a body of published work against every place it lives - for any ORCID, from public sources - plus the gates that run before research output leaves your hands."
 readme = "README-pypi.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -17,6 +17,9 @@ keywords = [
     "Zenodo",
     "reproducibility",
     "research metadata",
+    "ORCID",
+    "OpenAlex",
+    "Wikidata",
     "static analysis",
 ]
 classifiers = [
@@ -40,6 +43,7 @@ Source = "https://github.com/zengineco/apriori"
 Issues = "https://github.com/zengineco/apriori/issues"
 
 [project.scripts]
+authorecon-discover = "authorecon.discover:main"
 submission-scrub = "authorecon.submission_scrub:main"
 slop-scan = "authorecon.slop_scan:main"
 software-inventory = "authorecon.software_inventory:main"
