@@ -92,6 +92,40 @@ DIFFERS = 0.50
 
 # ── splitting a pasted bibliography ──────────────────────────
 
+#: What the opening of a new reference looks like.
+#:
+#: Pasting from a word processor wraps each reference across several lines
+#: with nothing to mark the continuations. That is the commonest way a list
+#: arrives and the way the indent rule failed: six lines became six
+#: references, each a fragment matching nothing.
+STARTERS = (
+    r"[\[(]?\d{1,3}[\].)]\s",                  # 1.   [1]   (1)
+    r"[—–-]{2,}",                    # ---  a repeated author
+    r"[A-Z][A-Za-z'’-]+,\s*[A-Z]",        # Shannon, C. E.
+    r"[A-Z][A-Za-z'’-]+\s+[A-Z]{1,4}[.,;]",   # Shannon CE.
+    r"[A-Z][^.]{2,70}\.?\s*\(\d{4}[a-z]?\)",  # Centre for Disease Control. (2021)
+)
+
+#: A reference that has ended closes its sentence. A line that does not is
+#: still mid-reference whatever the next line looks like, which catches the
+#: continuations no opening pattern can be written for.
+FINISHED = re.compile(r"[.!?\"”»']\s*$")
+
+
+def starts_a_reference(line):
+    """
+    Does this line open a reference, or continue the one above it?
+
+    Judged on what the line begins with rather than on how it is indented.
+    A continuation begins mid-sentence: a lowercase word, a page range, or a
+    journal name, none of which carry the shape of an author.
+    """
+    text = (line or "").strip()
+    if not text:
+        return False
+    return any(re.match(pattern, text) for pattern in STARTERS)
+
+
 def split_refs(text):
     """
     A reference list arrives in one of three shapes, and the shape has to be
@@ -116,7 +150,9 @@ def split_refs(text):
     for line in raw.split("\n"):
         if not line.strip():
             continue
-        if re.match(r"^(\s{2,}|\t)", line) and lines:
+        indented = re.match(r"^(\s{2,}|\t)", line)
+        open_above = lines and not FINISHED.search(lines[-1])
+        if lines and (indented or open_above or not starts_a_reference(line)):
             lines[-1] += " " + line.strip()
         else:
             lines.append(line.strip())
