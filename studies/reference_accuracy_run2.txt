@@ -1,0 +1,60 @@
+
+  1000 real references checked
+
+    correct       872    87.2%
+    alias          13     1.3%
+    wrong          87     8.7%
+    missed         28     2.8%
+    unchecked       0     0.0%
+
+  Of the 1000 it could reach:
+    88.5% found the right work
+       of which 13 under a different registered identifier for the same article
+    2.80% reported a real reference as unfindable
+    8.70% pointed at a different work
+
+  A reader has to see the disagreements to know what they are.
+
+  MISSED - 28 of them, 4 shown
+
+    Brand U, Fletcher JC, Hobe M, Meyerowitz EM, Simon R (2000) Dependence of stem cell fate in Arabidopsis 
+      crossref says : 10.1126/science.289.5479.617
+      state         : unlocatable
+
+    Settmacher U, Thelen A et al. (2005). »[Resection and reconstruction of the retrohepatic vena cava in co
+      crossref says : 10.1055/s-2005-836389
+      state         : unlocatable
+
+    Chan A, Lepore A, Kotoya E, Zemianek J, Remington R, Shea TB (2010) Efficacy of a vitamin/nutriceutical 
+      crossref says : 10.1007/s12603-010-0054-5
+      state         : unlocatable
+
+    Fernández Zalazar, D. C. y Neri, C. (2011), Usos de las TICS en estudiantes universitarios y su relación
+      crossref says : 10.36443/10259/4491
+      state         : unlocatable
+
+  WRONG - 87 of them, 4 shown
+
+    Villar JL, Puigbò P, Riera-Codina M (2003) Comp Biochem Physiol B 135:169–175
+      crossref says : 10.1016/s1096-4959(03)00077-0
+      this found    : 
+                      
+      state         : untitled
+
+    Isbrandt LR, Oertel RP (1980) J Am Chem Soc 102:3144–3148
+      crossref says : 10.1021/ja00529a043
+      this found    : 
+                      
+      state         : untitled
+
+    A. Bienkowski, R. Kolano, R. Szewczyk, J. Magn. Magn. Mater. 254-255, 67 (2003)
+      crossref says : 10.1016/s0304-8853(02)00755-2
+      this found    : 
+                      
+      state         : untitled
+
+    Mansell D, Rattray N, Etchells L, Schwalbe CH, Blake AJ, Bichenkova EV, Bryce R, Barjer CJ, Díaz A, Krem
+      crossref says : 10.1039/b809238a
+      this found    : 
+                      
+      state         : untitled

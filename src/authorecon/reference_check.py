@@ -64,6 +64,7 @@ import json
 import re
 import sys
 import time
+import unicodedata
 import urllib.parse
 
 from .discover import CONTACT, Problem, fetch
@@ -87,6 +88,7 @@ UNLOCATABLE = "unlocatable"
 RETRACTED = "retracted"
 UNCHECKED = "unchecked"
 UNTITLED = "untitled"
+OTHER_SCRIPT = "other script"
 
 #: A title present as one run is a citation. Words gathered from an author
 #: list and a journal name are a coincidence. Half is where one becomes the
@@ -232,7 +234,55 @@ def year_agrees(a, b):
 # ── does the record match the reference that named it ────────
 
 def skeleton(text):
-    return re.sub(r"[^a-z0-9]", "", (text or "").lower())
+    """
+    The comparable letters and digits of a string, in any writing system.
+
+    Written as [^a-z0-9] this deleted every character outside the Latin
+    alphabet. A Japanese reference reduced to "1219116880" - the digits of
+    its year and page range, nothing else - and then matched nothing, which
+    was reported as a work that could not be found. Every non-Latin
+    reference in a thousand failed this way.
+    """
+    flat = unicodedata.normalize("NFKD", (text or "").lower())
+    return "".join(c for c in flat
+                   if c.isalnum() and not unicodedata.combining(c))
+
+
+#: The scripts a reference may be written in. Grouped by what an index is
+#: likely to hold rather than by linguistic family.
+def script_of(text):
+    counts = {}
+    for ch in text or "":
+        if not ch.isalpha():
+            continue
+        name = unicodedata.name(ch, "")
+        for label in ("LATIN", "CYRILLIC", "GREEK", "ARABIC", "HEBREW",
+                      "HIRAGANA", "KATAKANA", "CJK", "HANGUL", "DEVANAGARI",
+                      "THAI"):
+            if name.startswith(label):
+                counts[label] = counts.get(label, 0) + 1
+                break
+    if not counts:
+        return "none"
+    return max(counts, key=counts.get)
+
+
+#: How a script is named to a reader. "Cjk" is a Unicode block, not a thing
+#: anybody calls their own writing.
+SCRIPT_NAMES = {
+    "CYRILLIC": "Cyrillic", "GREEK": "Greek", "ARABIC": "Arabic",
+    "HEBREW": "Hebrew", "HIRAGANA": "Japanese", "KATAKANA": "Japanese",
+    "CJK": "Chinese, Japanese or Korean characters", "HANGUL": "Korean",
+    "DEVANAGARI": "Devanagari", "THAI": "Thai", "LATIN": "the Latin alphabet",
+}
+
+
+def script_name(text):
+    return SCRIPT_NAMES.get(script_of(text), "a non-Latin script")
+
+
+def mostly_latin(text):
+    return script_of(text) in ("LATIN", "none")
 
 
 def longest_run(a, b):
@@ -499,6 +549,17 @@ def check_one(ref):
             out["state"] = REVIEW
             out["says"] = ("The closest record found agrees with part of this "
                            "reference.")
+        elif not mostly_latin(ref):
+            # Nothing found, and the reference is not in the script the
+            # indexes searched are built around. Absence here is a statement
+            # about the indexes rather than about the work, and reporting it
+            # as a missing citation would put every author writing in
+            # Russian, Japanese or Arabic under suspicion for it.
+            out["state"] = OTHER_SCRIPT
+            out["says"] = ("This reference is written in {}, and the indexes "
+                           "searched hold such works inconsistently. Nothing "
+                           "was found, and that is not evidence the work does "
+                           "not exist.".format(script_name(ref)))
         elif carries_a_title(ref):
             out["state"] = UNLOCATABLE
             out["says"] = ("No record matching this reference was found in any "
@@ -542,8 +603,8 @@ def run(text, log=print):
     return rows
 
 
-ORDER = [CONFIRMED, LOCATED, REVIEW, UNTITLED, DIVERGENT, UNLOCATABLE,
-         RETRACTED, UNCHECKED]
+ORDER = [CONFIRMED, LOCATED, REVIEW, UNTITLED, OTHER_SCRIPT,
+         DIVERGENT, UNLOCATABLE, RETRACTED, UNCHECKED]
 
 
 def report(rows, log=print):
