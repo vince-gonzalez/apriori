@@ -1,0 +1,62 @@
+
+  1000 real references checked
+
+    correct       845    84.5%
+    alias          16     1.6%
+    wrong          21     2.1%
+    missed        118    11.8%
+    unchecked       0     0.0%
+
+  Of the 1000 it could reach:
+    86.1% found the right work
+       of which 16 under a different registered identifier for the same article
+    11.80% reported a real reference as unfindable
+    2.10% pointed at a different work
+
+  A reader has to see the disagreements to know what they are.
+
+  MISSED - 118 of them, 4 shown
+
+    Egerton-Warburton LM, Griffin BJ (1995) Differential responses of Pisolithus tinctorius isolates to alum
+      crossref says : 10.1139/b95-133
+      state         : unlocatable
+
+    Farrand SG, Linton JD, Stephenson RJ, MacCarthy WV (1983) Arch Microbiol 135:272–275
+      crossref says : 10.1007/bf00413480
+      state         : unlocatable
+
+    Munns CF, Rauch F, Zeitlin L, Fassier F, Glorieux FH (2004) Delayed osteotomy but not fracture healing i
+      crossref says : 10.1359/jbmr.040814
+      state         : unlocatable
+
+    Meneghello, M. et al. Formate dehydrogenases reduce CO2 rather than $${\mathrm{HCO}}_{3}^-$$: an electro
+      crossref says : 10.1002/anie.202101167
+      state         : unlocatable
+
+  WRONG - 21 of them, 4 shown
+
+    Otero Gonzalez A, Iglesias Forneiro A, Camba Caride MJ, Perez Melon C, Borrajo Prol MP, Novoa Fernandez 
+      crossref says : 10.1016/j.nefro.2015.10.002
+      this found    : 10.1016/j.nefroe.2016.01.004
+                      Survival for haemodialysis vs. peritoneal dialysis and technique transferenc
+      state         : review
+
+    Nodrat, F., and Kang, D. (2017, January 24–26). Developing a Simplified Maintenance & Rehabilitation Act
+      crossref says : 10.1109/iciibms.2017.8279751
+      this found    : 10.1109/iciibms39582.2017
+                      2017 International Conference on Intelligent Informatics and Biomedical Scie
+      state         : located
+
+    Axelrad JE, Olén O, Sachs MC, Erichsen R, Pedersen L, Halfvarson J. Inflammatory bowel disease and risk 
+      crossref says : 10.1136/gutjnl-2020-322450
+      this found    : 10.1136/gutjnl-2020-320945
+                      Inflammatory bowel disease and risk of small bowel cancer: a binational popu
+      state         : located
+
+    G. Levin, U. Della Sala, Phostrips process – A viable answer to eutrophication of lakes and coastal sea 
+      crossref says : 10.1016/b978-0-08-035592-4.50027-4
+      this found    : 10.1016/c2013-0-03842-x
+                      Biological Phosphate Removal from Wastewaters
+      state         : located
+
+  wrote studies/reference_accuracy_2026-08-21.json

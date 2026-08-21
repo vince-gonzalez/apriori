@@ -1,0 +1,57 @@
+  drawing works from Crossref...
+  sampled 100 works
+  sampled 200 works
+  sampled 300 works
+  sampled 400 works
+  sampled 500 works
+  sampled 600 works
+  sampled 700 works
+  sampled 800 works
+  sampled 900 works
+  sampled 1000 works
+  sampled 1100 works
+  sampled 1200 works
+  sampled 1300 works
+  sampled 1400 works
+  1000 labelled references
+  checking...
+     25/1000  {'correct': 25}
+     50/1000  {'correct': 50}
+     75/1000  {'correct': 61, 'missed': 14}
+    100/1000  {'correct': 61, 'missed': 39}
+    125/1000  {'correct': 71, 'missed': 54}
+    150/1000  {'correct': 94, 'missed': 56}
+    175/1000  {'correct': 119, 'missed': 56}
+    200/1000  {'correct': 143, 'missed': 57}
+    225/1000  {'correct': 166, 'missed': 57, 'wrong': 1, 'alias': 1}
+    250/1000  {'correct': 184, 'missed': 57, 'wrong': 5, 'alias': 4}
+    275/1000  {'correct': 203, 'missed': 62, 'wrong': 5, 'alias': 5}
+    300/1000  {'correct': 214, 'missed': 72, 'wrong': 6, 'alias': 8}
+    325/1000  {'correct': 232, 'missed': 78, 'wrong': 6, 'alias': 9}
+    350/1000  {'correct': 257, 'missed': 78, 'wrong': 6, 'alias': 9}
+    375/1000  {'correct': 279, 'missed': 79, 'wrong': 8, 'alias': 9}
+    400/1000  {'correct': 303, 'missed': 79, 'wrong': 9, 'alias': 9}
+    425/1000  {'correct': 328, 'missed': 79, 'wrong': 9, 'alias': 9}
+    450/1000  {'correct': 350, 'missed': 79, 'wrong': 12, 'alias': 9}
+    475/1000  {'correct': 375, 'missed': 79, 'wrong': 12, 'alias': 9}
+    500/1000  {'correct': 399, 'missed': 80, 'wrong': 12, 'alias': 9}
+    525/1000  {'correct': 424, 'missed': 80, 'wrong': 12, 'alias': 9}
+    550/1000  {'correct': 448, 'missed': 81, 'wrong': 12, 'alias': 9}
+    575/1000  {'correct': 472, 'missed': 81, 'wrong': 13, 'alias': 9}
+    600/1000  {'correct': 492, 'missed': 85, 'wrong': 14, 'alias': 9}
+    625/1000  {'correct': 514, 'missed': 85, 'wrong': 15, 'alias': 11}
+    650/1000  {'correct': 535, 'missed': 86, 'wrong': 17, 'alias': 12}
+    675/1000  {'correct': 559, 'missed': 86, 'wrong': 18, 'alias': 12}
+    700/1000  {'correct': 569, 'missed': 101, 'wrong': 18, 'alias': 12}
+    725/1000  {'correct': 582, 'missed': 113, 'wrong': 18, 'alias': 12}
+    750/1000  {'correct': 607, 'missed': 113, 'wrong': 18, 'alias': 12}
+    775/1000  {'correct': 630, 'missed': 113, 'wrong': 18, 'alias': 14}
+    800/1000  {'correct': 654, 'missed': 113, 'wrong': 18, 'alias': 15}
+    825/1000  {'correct': 678, 'missed': 113, 'wrong': 19, 'alias': 15}
+    850/1000  {'correct': 701, 'missed': 114, 'wrong': 20, 'alias': 15}
+    875/1000  {'correct': 726, 'missed': 114, 'wrong': 20, 'alias': 15}
+    900/1000  {'correct': 750, 'missed': 114, 'wrong': 20, 'alias': 16}
+    925/1000  {'correct': 773, 'missed': 116, 'wrong': 20, 'alias': 16}
+    950/1000  {'correct': 798, 'missed': 116, 'wrong': 20, 'alias': 16}
+    975/1000  {'correct': 823, 'missed': 116, 'wrong': 20, 'alias': 16}
+   1000/1000  {'correct': 845, 'missed': 118, 'wrong': 21, 'alias': 16}
