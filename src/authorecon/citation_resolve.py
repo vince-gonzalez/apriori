@@ -55,10 +55,10 @@ import time
 import urllib.error
 import urllib.request
 
-from .discover import Problem, from_orcid, fetch, normalise_orcid, valid_checksum
+from .discover import (UA, Problem, from_orcid, fetch, normalise_orcid,
+                       valid_checksum)
 from .qikstgen import ZENODO_RECORD
 
-UA = "authorecon/0.7 (+https://f-keys.com; link check)"
 TIMEOUT = 25
 
 OK, REDIRECT, DEAD, UNREACHABLE = "ok", "redirected", "dead", "unreachable"

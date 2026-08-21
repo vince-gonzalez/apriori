@@ -52,7 +52,7 @@ import json
 import sys
 import urllib.parse
 
-from .discover import (Problem, fetch, normalise_orcid, valid_checksum,
+from .discover import (CONTACT, Problem, fetch, normalise_orcid, valid_checksum,
                        author_name)
 
 AUTHORS = "https://api.openalex.org/authors"
@@ -66,8 +66,7 @@ def bare(orcid_url):
 
 def candidates(name, mailto=None):
     params = {"filter": "display_name.search:" + name, "per-page": "50"}
-    if mailto:
-        params["mailto"] = mailto
+    params["mailto"] = mailto or CONTACT
     doc = fetch(AUTHORS + "?" + urllib.parse.urlencode(params))
     return (doc.get("meta") or {}).get("count", 0), doc.get("results") or []
 

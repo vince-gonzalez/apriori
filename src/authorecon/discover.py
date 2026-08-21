@@ -45,7 +45,13 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-UA = "authorecon/0.2 (+https://f-keys.com; mailto:vincegonzalez@me.com)"
+#: The contact every source is given. A role address on the service
+#: domain, because this package runs on other people's machines and
+#: the address it sends belongs to the tool rather than to whoever
+#: happens to be running it.
+CONTACT = "api@epistemend.org"
+UA = ("authorecon/1.0 (+https://www.epistemend.org; "
+      "mailto:{})".format(CONTACT))
 ORCID_API = "https://pub.orcid.org/v3.0/{}/works"
 ORCID_REC = "https://pub.orcid.org/v3.0/{}/person"
 OPENALEX = "https://api.openalex.org/works"
@@ -187,8 +193,7 @@ def from_openalex(orcid, mailto=None, cap=OPENALEX_MAX):
             "per-page": "200",
             "cursor": cursor,
         }
-        if mailto:
-            params["mailto"] = mailto
+        params["mailto"] = mailto or CONTACT
         doc = fetch(OPENALEX + "?" + urllib.parse.urlencode(params))
         total = (doc.get("meta") or {}).get("count", total)
         results = doc.get("results") or []

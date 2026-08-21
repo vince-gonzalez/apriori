@@ -50,12 +50,11 @@ import sys
 import time
 import urllib.request
 
-from .discover import (Problem, fetch, from_orcid, normalise_orcid,
+from .discover import (UA, Problem, fetch, from_orcid, normalise_orcid,
                        valid_checksum)
 from .qikstgen import ZENODO_RECORD
 from .abstract_op import normalise
 
-UA = "authorecon/0.12 (+https://f-keys.com)"
 
 MATCH, DIFFERS, NOT_FOUND = "match", "DIFFERS", "not found"
 #: Reported, never counted as a problem. A Zenodo DOI is minted after the
