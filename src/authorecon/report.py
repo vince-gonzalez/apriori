@@ -43,7 +43,7 @@ import json
 import sys
 import time
 
-from . import (abstract_op, citation_resolve, deposit_lint, discover,
+from . import (abstract_op, name_privacy, citation_resolve, deposit_lint, discover,
                index_lag, orcid_collision, retraction_watch, self_citation,
                venue_reality, wd_sweeper)
 from .discover import Problem, normalise_orcid, valid_checksum
@@ -82,8 +82,8 @@ def build(orcid, log=print):
     quiet = lambda *_: None                      # noqa: E731
 
     def identity(emit):
-        total, results = orcid_collision.candidates(
-            orcid_collision.author_name(orcid) or "")
+        name = orcid_collision.author_name(orcid) or ""
+        total, results = orcid_collision.candidates(name)
         rows = orcid_collision.classify(results, orcid)
         mine = [r for r in rows if r["kind"] == orcid_collision.SAME]
         anon = [r for r in rows if r["kind"] == orcid_collision.NO_ORCID]
@@ -96,7 +96,11 @@ def build(orcid, log=print):
         emit("{} share the name with no identifier at all, {} works between "
              "them".format(len(anon), sum(r["works"] for r in anon)))
         emit("{} are different identified people".format(len(other)))
-        return {"total": total, "rows": rows}
+        split = name_privacy.fragmentation(rows, name)
+        if split:
+            emit(split)
+        # These rows leave this process as JSON. Names do not leave with them.
+        return {"total": total, "rows": name_privacy.redact(rows)}
 
     def record(emit):
         doc = discover.discover(orcid, with_wikidata=False, log=quiet)
