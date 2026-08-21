@@ -375,19 +375,26 @@ def check_one(ref):
                            "from the one written here.")
 
     else:
-        # Crossref first, then the indexes that hold what Crossref does not.
-        candidates = search_crossref(ref)
-        candidates += search_europepmc(ref)
-        candidates += search_pubmed(ref)
+        # Crossref first, then the indexes that hold what Crossref does not
+        # - and only if the one before it did not already settle the matter.
+        # Asking all three every time was three requests to answer a question
+        # the first had answered, on every reference in every document.
+        def rank(records):
+            return sorted(
+                ({"rec": c, "score": agreement(c["title"], ref),
+                  "solid": verdict(agreement(c["title"], ref)) == "agrees"
+                           and year_agrees(year, c["year"])}
+                 for c in records),
+                key=lambda x: (not x["solid"], -x["score"]))
 
-        scored = sorted(
-            ({"rec": c, "score": agreement(c["title"], ref),
-              "solid": verdict(agreement(c["title"], ref)) == "agrees"
-                       and year_agrees(year, c["year"])}
-             for c in candidates),
-            key=lambda x: (not x["solid"], -x["score"]))
-
-        best = scored[0] if scored else None
+        best = None
+        seen = []
+        for source in (search_crossref, search_europepmc, search_pubmed):
+            seen += source(ref)
+            scored = rank(seen)
+            best = scored[0] if scored else None
+            if best and best["solid"]:
+                break
         if best and verdict(best["score"]) == "agrees":
             out["found"] = best["rec"]
             if year_agrees(year, best["rec"]["year"]):
