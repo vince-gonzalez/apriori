@@ -48,6 +48,7 @@ Source = "https://github.com/vince-gonzalez/apriori"
 Issues = "https://github.com/vince-gonzalez/apriori/issues"
 
 [project.scripts]
+authorecon-report = "authorecon.report:main"
 authorecon-discover = "authorecon.discover:main"
 authorecon-qikstgen = "authorecon.qikstgen:main"
 authorecon-deposit-lint = "authorecon.deposit_lint:main"
