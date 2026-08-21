@@ -31,6 +31,8 @@ or a bare URL. Both rot; only one of them is usually checked.
 WHAT A RESULT MEANS
 
   ok          resolved, and the destination is the one named
+  blocked     resolved, and the host refused an automated request.
+              Publisher paywalls do this. Not a broken link
   redirected  resolved somewhere else. Not broken, but the
               record now names a location that forwards, which
               is the state directly before broken
@@ -60,6 +62,13 @@ UA = "authorecon/0.7 (+https://f-keys.com; link check)"
 TIMEOUT = 25
 
 OK, REDIRECT, DEAD, UNREACHABLE = "ok", "redirected", "dead", "unreachable"
+#: The resolver worked and the destination refused an automated request.
+#: Publishers do this routinely - a person following the link sees the paywall
+#: or the paper. Counting it as dead reported 15 broken citations where 1 was
+#: broken, and would have sent a reader chasing ten that are fine.
+BLOCKED = "blocked"
+#: Codes that mean "not for robots", not "not there".
+REFUSED = (401, 403, 429)
 
 
 def as_url(identifier, scheme=""):
@@ -110,6 +119,8 @@ def check(url, is_doi=False):
             with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
                 return OK, str(r.status)
         except urllib.error.HTTPError as err:
+            if err.code in REFUSED:
+                return BLOCKED, str(err.code)
             return DEAD, str(err.code)
         except Exception as err:
             return UNREACHABLE, type(err).__name__
@@ -126,6 +137,8 @@ def check(url, is_doi=False):
         except urllib.error.HTTPError as err:
             if err.code in (403, 405, 501) and method == "HEAD":
                 continue          # try GET before believing it
+            if err.code in REFUSED:
+                return BLOCKED, str(err.code)
             return DEAD, str(err.code)
         except Exception as err:
             if method == "HEAD":
@@ -193,9 +206,17 @@ def summarise(rows, log=print):
     log("")
     log("  {} outbound identifiers across {} records".format(
         len(rows), len({r["from_doi"] for r in rows})))
-    for state in (OK, REDIRECT, DEAD, UNREACHABLE):
+    for state in (OK, BLOCKED, REDIRECT, DEAD, UNREACHABLE):
         if counts.get(state):
             log("    {:<11} {}".format(state, counts[state]))
+
+    blocked = [r for r in rows if r["state"] == BLOCKED]
+    if blocked:
+        targets = sorted({r["points_at"] for r in blocked})
+        log("")
+        log("  BLOCKED - {} identifier(s) whose host refused an automated "
+            "request.".format(len(targets)))
+        log("  These are almost always publisher paywalls. Not broken.")
 
     dead = [r for r in rows if r["state"] == DEAD]
     if dead:
