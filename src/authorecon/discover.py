@@ -228,6 +228,54 @@ def wikidata_for(doi):
     return hits[0]["title"] if hits else None
 
 
+
+# ── Zenodo mints two DOIs per work ───────────────────────────
+#
+# Every Zenodo record has a version DOI and a concept DOI, the second being
+# the "all versions" identifier. An author usually claims one of them on
+# ORCID, and OpenAlex indexes the other, so comparing raw DOIs reports the
+# same work as missing.
+#
+# Measured on the record this tool was written for: of 41 works reported as
+# unclaimed, 32 were already on the record under their other DOI, and the
+# remaining 9 collapsed to 4 once versions of one paper were grouped. The
+# headline number was wrong by a factor of ten.
+#
+# So Zenodo DOIs are resolved to their concept before anything is compared.
+
+ZENODO_RECORD = "https://zenodo.org/api/records/{}"
+_concept_cache = {}
+
+
+def zenodo_concept(doi):
+    """
+    The concept DOI for a Zenodo DOI, or the DOI unchanged for anything else.
+
+    Failure returns the input rather than raising: a work that cannot be
+    resolved should be reported as-is, not dropped and not silently merged
+    into another.
+    """
+    if not doi:
+        return doi
+    low = doi.lower()
+    if low in _concept_cache:
+        return _concept_cache[low]
+    if "zenodo." not in low:
+        _concept_cache[low] = low
+        return low
+    rid = low.rsplit("zenodo.", 1)[-1]
+    if not rid.isdigit():
+        _concept_cache[low] = low
+        return low
+    try:
+        rec = fetch(ZENODO_RECORD.format(rid))
+        concept = (rec.get("conceptdoi") or "").lower() or low
+    except Problem:
+        concept = low
+    _concept_cache[low] = concept
+    time.sleep(0.1)
+    return concept
+
 # ── putting it together ──────────────────────────────────────
 
 def discover(orcid, with_wikidata=True, mailto=None, log=print):
@@ -251,13 +299,23 @@ def discover(orcid, with_wikidata=True, mailto=None, log=print):
         log("  NOTE     stopped at {} works; the counts below cover what was "
             "read, not the whole record".format(len(alex)))
 
+    # Resolve every DOI on both sides to its concept first, so a work claimed
+    # under one Zenodo DOI is not reported missing because OpenAlex indexed
+    # the other.
+    log("  zenodo   resolving version DOIs to their concept...")
+    claimed_concepts = set()
+    for w in orcid_works:
+        if w["doi"]:
+            claimed_concepts.add(zenodo_concept(w["doi"]))
+
     works, seen = [], set()
     for w in orcid_works:
         doi = w["doi"]
-        if doi and doi in seen:
+        concept = zenodo_concept(doi) if doi else None
+        if concept and concept in seen:
             continue
-        if doi:
-            seen.add(doi)
+        if concept:
+            seen.add(concept)
         extra = alex.get(doi or "", {})
         works.append({
             "title": w["title"],
@@ -271,20 +329,35 @@ def discover(orcid, with_wikidata=True, mailto=None, log=print):
             "in_openalex": bool(extra),
         })
 
-    # Anything OpenAlex knows that the ORCID record does not is worth naming:
-    # it is usually a work the author has never claimed.
-    unclaimed = [d for d in alex if d not in seen]
-    for doi in unclaimed:
+    # Anything OpenAlex knows that the ORCID record does not, compared on
+    # concepts, and with versions of one work collapsed to one entry.
+    same_doi_versions = 0
+    unclaimed = []
+    for doi in alex:
+        concept = zenodo_concept(doi)
+        if concept in claimed_concepts:
+            same_doi_versions += 1
+            continue
+        if concept in seen:
+            same_doi_versions += 1
+            continue
+        seen.add(concept)
+        unclaimed.append((doi, concept))
+
+    for doi, concept in unclaimed:
         extra = alex[doi]
         works.append({
-            "title": None, "doi": doi, "date": None,
+            "title": None, "doi": doi, "concept_doi": concept, "date": None,
             "type": extra.get("type"), "openalex": extra.get("openalex"),
             "cited_by": extra.get("cited_by"),
             "open_access": extra.get("open_access"),
             "wikidata": None, "in_openalex": True, "unclaimed": True,
         })
+    if same_doi_versions:
+        log("  merged   {} already on the record under another DOI, or another "
+            "version of one already counted".format(same_doi_versions))
     if unclaimed:
-        log("  unclaimed {} in OpenAlex but not on the ORCID record{}"
+        log("  unclaimed {} distinct works absent from the ORCID record{}"
             .format(len(unclaimed), "" if complete else " (of those read)"))
 
     if with_wikidata:

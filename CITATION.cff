@@ -7,20 +7,21 @@ authors:
     family-names: Gonzalez
     orcid: "https://orcid.org/0009-0005-3640-014X"
     email: vincegonzalez@me.com
-repository-code: "https://github.com/zengineco/apriori"
+repository-code: "https://github.com/vince-gonzalez/apriori"
 abstract: >-
-  Two things a research programme needs and rarely has. `authorecon` reconciles
-  what Zenodo, Wikidata, OpenAlex and the OEIS each record about the same body
-  of work and reports where they disagree, which is how a self-citation
-  masquerading as an external one gets caught. The `tools/` directory holds the
-  gates: `submission_scrub.py` refuses to let a manuscript reach an editor with
-  agent artifacts or stray comments still in the source; `slop_scan.py` looks
-  for the structural habits that read as machine-written — contrastive pairs,
-  announced candour, padded triads, restatement openers, em-dash density —
-  which a word-list scan cannot find; and `software_inventory.py` reports
-  licence, citation metadata and per-module documentation state across a set of
-  repositories, so the gap between a script and something citable is a list
-  rather than an impression.
+  Five commands for the record a research programme leaves behind.
+  `authorecon-discover` takes any ORCID and reconciles what the author claims
+  against what OpenAlex indexes and what Wikidata holds, using sources that need
+  no key, so it can be asked about anyone. The gates run before work leaves your
+  hands: `submission-scrub` refuses to let a manuscript reach an editor with
+  agent artifacts still in the source; `slop-scan` looks for the structural
+  habits that read as machine-written, which a word list cannot find;
+  `software-inventory` reports which repositories are in a state anyone could
+  cite; `zenodo-precheck` refuses to deposit what is already deposited, by
+  comparing attached files rather than titles.
+
+  Standard library only, no dependencies.
+
 keywords:
   - bibliographic reconciliation
   - research software

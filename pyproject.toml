@@ -38,9 +38,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/zengineco/apriori"
-Source = "https://github.com/zengineco/apriori"
-Issues = "https://github.com/zengineco/apriori/issues"
+Homepage = "https://github.com/vince-gonzalez/apriori"
+Source = "https://github.com/vince-gonzalez/apriori"
+Issues = "https://github.com/vince-gonzalez/apriori/issues"
 
 [project.scripts]
 authorecon-discover = "authorecon.discover:main"
