@@ -75,6 +75,10 @@ EUROPEPMC = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
 OPENLIB = "https://openlibrary.org/isbn/{}.json"
 PUBMED = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 
+class Unreachable(Exception):
+    """A source did not answer. Not the same as a source having nothing."""
+
+
 CONFIRMED = "confirmed"
 LOCATED = "located"
 REVIEW = "review"
@@ -82,6 +86,7 @@ DIVERGENT = "divergent"
 UNLOCATABLE = "unlocatable"
 RETRACTED = "retracted"
 UNCHECKED = "unchecked"
+UNTITLED = "untitled"
 
 #: A title present as one run is a citation. Words gathered from an author
 #: list and a journal name are a coincidence. Half is where one becomes the
@@ -160,6 +165,34 @@ def split_refs(text):
 
 
 # ── what a reference already tells us ────────────────────────
+
+def carries_a_title(ref):
+    """
+    Is there a title here to match against?
+
+    Some house styles cite authors, year, journal abbreviation and page
+    range and stop. Nothing is wrong with the reference and there is
+    nothing in it to verify. Reporting those as "not found" told an editor
+    a citation might be fabricated when the citation was merely terse - 101
+    of 118 apparent failures in a run of a thousand were this.
+    """
+    after = re.split(r"\(\d{4}[a-z]?\)", ref or "", maxsplit=1)
+    tail = (after[1] if len(after) > 1 else (ref or "")).strip(" .,")
+
+    # Counting words was the first attempt and it called Shannon's paper
+    # titleless: "A mathematical theory of communication" carries four words
+    # over three letters, which is fewer than a journal name.
+    #
+    # What separates them is the locator. A title is a phrase; a journal is
+    # a phrase followed immediately by a volume and a page range.
+    for part in re.split(r"[.;]", tail):
+        part = part.strip()
+        if re.search(r"\d+\s*[:,]?\s*\d+\s*[-–—]?\s*\d*$", part):
+            continue                      # journal, volume and pages
+        if len(re.findall(r"[A-Za-z]{2,}", part)) >= 4:
+            return True
+    return False
+
 
 def find_doi(ref):
     m = re.search(r"\b(10\.\d{4,9}/[^\s\"'<>,]+)", ref or "", re.I)
@@ -311,7 +344,12 @@ def search_crossref(ref):
         return [from_crossref(i)
                 for i in (fetch(url).get("message") or {}).get("items") or []]
     except Problem:
-        return []
+        # An index that did not answer has not told us the work is absent.
+        # Returning an empty list here made a network fault indistinguishable
+        # from a fabricated citation, and the study found it doing exactly
+        # that: fourteen of seventeen "missing" references were sitting in
+        # Crossref, two of them at a perfect title match.
+        raise Unreachable("Crossref did not answer")
 
 
 def search_europepmc(ref):
@@ -321,7 +359,7 @@ def search_europepmc(ref):
         got = fetch(url).get("resultList") or {}
         return [from_europepmc(r) for r in got.get("result") or []]
     except Problem:
-        return []
+        raise Unreachable("Europe PMC did not answer")
 
 
 def search_pubmed(ref):
@@ -335,7 +373,7 @@ def search_pubmed(ref):
     try:
         ids = ((fetch(url).get("esearchresult") or {}).get("idlist")) or []
     except Problem:
-        return []
+        raise Unreachable("PubMed did not answer")
     out = []
     for pmid in ids[:3]:
         found = search_europepmc("EXT_ID:" + pmid)
@@ -425,12 +463,25 @@ def check_one(ref):
 
         best = None
         seen = []
+        answered = 0
         for source in (search_crossref, search_europepmc, search_pubmed):
-            seen += source(ref)
+            try:
+                seen += source(ref)
+                answered += 1
+            except Unreachable:
+                continue
             scored = rank(seen)
             best = scored[0] if scored else None
             if best and best["solid"]:
                 break
+
+        # Nothing answered, so nothing is known. Saying "no such work" here
+        # is the difference between a network fault and an accusation.
+        if not answered:
+            out["state"] = UNCHECKED
+            out["says"] = ("No index answered for this reference, so nothing "
+                           "is claimed about it.")
+            return out
         if best and verdict(best["score"]) == "agrees":
             out["found"] = best["rec"]
             if year_agrees(year, best["rec"]["year"]):
@@ -448,10 +499,20 @@ def check_one(ref):
             out["state"] = REVIEW
             out["says"] = ("The closest record found agrees with part of this "
                            "reference.")
-        else:
+        elif carries_a_title(ref):
             out["state"] = UNLOCATABLE
             out["says"] = ("No record matching this reference was found in any "
                            "of the indexes consulted.")
+        else:
+            # Asked only of references nothing was found for. Asked earlier,
+            # as a gate on searching at all, it refused 143 of 861 references
+            # the search goes on to match correctly - the detector cannot see
+            # a title as well as the search can find one.
+            out["state"] = UNTITLED
+            out["says"] = ("Nothing was found, and this reference gives "
+                           "authors, a year and a journal without a title. "
+                           "There is too little here to identify a work, so "
+                           "it can be neither confirmed nor doubted.")
 
     found = (out["found"] or {}).get("doi")
     if found and out["state"] != UNLOCATABLE and is_retracted(found):
@@ -481,8 +542,8 @@ def run(text, log=print):
     return rows
 
 
-ORDER = [CONFIRMED, LOCATED, REVIEW, DIVERGENT, UNLOCATABLE, RETRACTED,
-         UNCHECKED]
+ORDER = [CONFIRMED, LOCATED, REVIEW, UNTITLED, DIVERGENT, UNLOCATABLE,
+         RETRACTED, UNCHECKED]
 
 
 def report(rows, log=print):
