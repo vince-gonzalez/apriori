@@ -68,6 +68,31 @@ from authorecon.discover import CONTACT, Problem, fetch  # noqa: E402
 SAMPLE = "https://api.crossref.org/works"
 
 
+def safe_print(line):
+    """
+    Print a line that may be in any writing system.
+
+    Redirecting output on Windows hands Python a cp1252 stream, which cannot
+    encode most of the world's scripts and raises rather than degrading. A
+    study of references from every language will meet one within a thousand
+    rows, and it did, twice. Reconfiguring the stream is attempted first
+    because it keeps the characters; encoding by hand is the fallback that
+    cannot fail.
+    """
+    try:
+        print(line)
+    except UnicodeEncodeError:
+        encoding = getattr(sys.stdout, "encoding", None) or "ascii"
+        print(line.encode(encoding, "replace").decode(encoding, "replace"))
+
+
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
+
 def sample_works(n, log):
     """
     Random works that carry references.
@@ -152,8 +177,13 @@ def run(pairs, log):
 
         found = (got.get("found") or {}).get("doi") or ""
         title = (got.get("found") or {}).get("title") or ""
-        if got["state"] == rc.UNCHECKED:
-            verdict = "unchecked"
+        # States where the check declined to judge are their own answer.
+        # Scored as failures by an earlier version of this study, they turned
+        # 21 wrong matches into 87 and read as a fourfold regression that had
+        # not happened. A measuring instrument that does not know every
+        # outcome reports the ones it does not know as the worst one.
+        if got["state"] in (rc.UNCHECKED, rc.UNTITLED, rc.OTHER_SCRIPT):
+            verdict = got["state"]
         elif got["state"] == rc.UNLOCATABLE:
             verdict = "missed"
         elif found == item["truth"]:
@@ -188,12 +218,17 @@ def report(rows, log=print):
     log("")
     log("  {} real references checked".format(total))
     log("")
-    for key in ("correct", "alias", "wrong", "missed", "unchecked"):
+    for key in ("correct", "alias", "wrong", "missed", "untitled",
+                "other script", "unchecked"):
         n = tally.get(key, 0)
         log("    {:<11} {:>5}   {:>5.1f}%".format(
             key, n, 100.0 * n / total if total else 0))
 
-    judged = total - tally.get("unchecked", 0)
+    # A reference the check declined to judge does not belong in a rate
+    # about how often it judges correctly.
+    declined = sum(tally.get(k, 0)
+                   for k in ("unchecked", "untitled", "other script"))
+    judged = total - declined
     if judged:
         log("")
         log("  Of the {} it could reach:".format(judged))
@@ -251,13 +286,17 @@ def main(argv=None):
 
     log("  checking...")
     rows = run(pairs, log)
-    report(rows, log=print)
 
+    # Written before anything is displayed. A completed run of a thousand
+    # references was lost twice to a console that could not encode a Turkish
+    # dotless i, because the presentation ran before the record was kept.
     if args.json:
         with open(args.json, "w", encoding="utf-8", newline="\n") as fh:
             json.dump({"checked": len(rows), "rows": rows}, fh, indent=1,
                       ensure_ascii=False)
-        print("\n  wrote {}".format(args.json))
+        log("  wrote {}".format(args.json))
+
+    report(rows, log=safe_print)
     return 0
 
 
