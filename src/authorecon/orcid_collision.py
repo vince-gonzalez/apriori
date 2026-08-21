@@ -52,6 +52,7 @@ import json
 import sys
 import urllib.parse
 
+from .name_privacy import WITHHELD, fragmentation, redact
 from .discover import (CONTACT, Problem, fetch, normalise_orcid, valid_checksum,
                        author_name)
 
@@ -132,6 +133,14 @@ def report(name, total, rows, log=print):
         log("  Each is either yours unclaimed or somebody else's. An index")
         log("  reconciling by name cannot tell, and neither can your record.")
 
+    # A name this author no longer uses is counted and not printed. The
+    # fragmentation is the actionable half; the name is the half that can
+    # hurt somebody. See name_privacy.
+    split = fragmentation(rows, name)
+    if split:
+        log("")
+        log("  {}".format(split))
+
     others = [r for r in rows if r["kind"] == DIFFERENT]
     if others:
         log("")
@@ -171,7 +180,9 @@ def main(argv=None):
     if args.json:
         with open(args.json, "w", encoding="utf-8", newline="\n") as fh:
             json.dump({"name": name, "orcid": orcid, "total": total,
-                       "authors": rows}, fh, indent=1, ensure_ascii=False)
+                       "names_withheld": WITHHELD,
+                       "authors": redact(rows)}, fh, indent=1,
+                      ensure_ascii=False)
         print("\n  wrote {}".format(args.json))
 
     return 1 if any(r["kind"] != SAME for r in rows) else 0
