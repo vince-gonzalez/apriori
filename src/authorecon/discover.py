@@ -303,6 +303,15 @@ def discover(orcid, with_wikidata=True, mailto=None, log=print):
     # under one Zenodo DOI is not reported missing because OpenAlex indexed
     # the other.
     log("  zenodo   resolving version DOIs to their concept...")
+    # OpenAlex is keyed by ITS version DOIs, which are not always the version
+    # the ORCID record names. Indexing the OpenAlex side by concept as well is
+    # what lets a work claimed under one version match the index entry for
+    # another - without it this reported 32 indexed where index-lag and
+    # venue-reality both found 41.
+    alex_by_concept = {}
+    for _doi in alex:
+        alex_by_concept[zenodo_concept(_doi)] = alex[_doi]
+
     claimed_concepts = set()
     for w in orcid_works:
         if w["doi"]:
@@ -316,7 +325,13 @@ def discover(orcid, with_wikidata=True, mailto=None, log=print):
             continue
         if concept:
             seen.add(concept)
-        extra = alex.get(doi or "", {})
+        # Look up by concept as well as by the literal DOI. Matching only
+        # the raw identifier missed every work indexed under another version
+        # of itself, and reported 32 works indexed where index-lag and
+        # venue-reality both found 41. Three sections of one report
+        # disagreeing about one number is worse than any of them being wrong.
+        extra = alex.get(doi or "", {}) or (
+            alex_by_concept.get(concept, {}) if concept else {})
         works.append({
             "title": w["title"],
             "doi": doi,
