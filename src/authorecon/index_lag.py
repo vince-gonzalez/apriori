@@ -116,6 +116,28 @@ def measure(orcid, log=print, today=None):
             continue
         zen = zenodo_facts(doi)
         if not zen or not zen["deposited"]:
+            # Dropping this silently was a real defect. A work on the record
+            # whose deposit will not load is not absent from the sample - it
+            # is the most interesting row in it. One deposit on the record
+            # this was written against returns 410 Gone: withdrawn from the
+            # repository and still listed on the ORCID profile. Skipping it
+            # shrank the denominator without saying so, and the summary then
+            # counted "not indexed" out of a total it no longer had.
+            rows.append({
+                "orcid": orcid,
+                "doi": doi,
+                "title": (w.get("title") or "")[:90],
+                "type": "",
+                "deposited": "",
+                "indexed_on": "",
+                "lag_days": "",
+                "age_days": "",
+                "censored": "yes",
+                "class": "no_deposit",
+                "zenodo_orcid": "",
+                "openalex_orcid": "",
+            })
+            time.sleep(0.12)
             continue
         alex = openalex_facts(doi)
         indexed = bool(alex and alex["created"])
@@ -142,7 +164,9 @@ def measure(orcid, log=print, today=None):
 
 def summarise(rows, log=print):
     indexed = [r for r in rows if r["censored"] != "yes"]
-    censored = [r for r in rows if r["censored"] == "yes"]
+    gone = [r for r in rows if r["class"] == "no_deposit"]
+    censored = [r for r in rows
+                if r["censored"] == "yes" and r["class"] != "no_deposit"]
 
     # A record OpenAlex created BEFORE the deposit date was not ingested late
     # or early - it was matched to a work OpenAlex already held, which for
@@ -163,6 +187,13 @@ def summarise(rows, log=print):
     log("      and {} matched to a record OpenAlex already held".format(
         len(prematched)))
     log("    {} not indexed yet (censored)".format(len(censored)))
+    if gone:
+        log("    {} on the record whose deposit will not load".format(
+            len(gone)))
+        for r in gone:
+            log("      {}  {}".format(r["doi"], r["title"][:52]))
+        log("      A DOI on a public profile that resolves to nothing is")
+        log("      worth fixing before anyone follows it.")
 
     if lags:
         mid = lags[len(lags) // 2] if len(lags) % 2 else (

@@ -176,8 +176,16 @@ def compare(sources):
     for i, left in enumerate(names):
         for right in names[i + 1:]:
             a, b = normalise(sources[left]), normalise(sources[right])
+            # autojunk=False is load-bearing. SequenceMatcher treats any
+            # element appearing in more than 1% of a sequence of 200 or more
+            # as junk and refuses to match on it - a heuristic meant for
+            # lines of code, applied here to CHARACTERS, where it discards
+            # every common letter in the language. It scored one pair of
+            # abstracts at 0.0482 that are 0.2894 alike, and flagged another
+            # at 0.9778 that is 0.9809 - across the threshold, so the tool
+            # reported a divergence that does not exist.
             ratio = difflib.SequenceMatcher(
-                None, _skeleton(a), _skeleton(b)).ratio()
+                None, _skeleton(a), _skeleton(b), autojunk=False).ratio()
             pairs.append({"left": left, "right": right, "ratio": ratio,
                           "len_left": len(a), "len_right": len(b),
                           "a": a, "b": b})

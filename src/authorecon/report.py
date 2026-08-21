@@ -147,12 +147,16 @@ def build(orcid, log=print):
         rows = index_lag.measure(orcid, log=quiet)
         ingested = [r for r in rows if r["class"] == "ingested"]
         censored = [r for r in rows if r["class"] == "not_indexed"]
+        gone = [r for r in rows if r["class"] == "no_deposit"]
         lags = sorted(int(r["lag_days"]) for r in ingested)
         if lags:
             mid = lags[len(lags) // 2]
             emit("Median {} day(s) from deposit to index, over {} works"
                  .format(mid, len(lags)))
         emit("{} work(s) have not been indexed at all".format(len(censored)))
+        for r in gone:
+            emit("{} is on the record but the deposit will not load"
+                 .format(r["doi"]))
         eligible = [r for r in rows
                     if r["zenodo_orcid"] == "yes" and r["class"] == "ingested"]
         lost = [r for r in eligible if r["openalex_orcid"] == "no"]
@@ -174,12 +178,17 @@ def build(orcid, log=print):
 
     def integrity(emit):
         works = [w for w in discover.from_orcid(orcid) if w["doi"]]
-        fails = warns = clean = 0
+        fails = warns = clean = unreadable = 0
         for w in works:
             try:
                 findings = deposit_lint.lint(deposit_lint.record_for(w["doi"]))
             except Problem:
-                fails += 1
+                # Counting this as a metadata failure was wrong. A record
+                # that will not load has no metadata to fail: the single
+                # "correction needed" this reported was a deposit returning
+                # 410, which is a worse problem of an entirely different
+                # kind, already named under REACHING THE INDEX.
+                unreadable += 1
                 continue
             f = sum(1 for x in findings if x.level == deposit_lint.FAIL)
             n = sum(1 for x in findings if x.level == deposit_lint.WARN)
@@ -190,7 +199,11 @@ def build(orcid, log=print):
         emit("{} deposit(s) pass every metadata check".format(clean))
         emit("{} carry a warning".format(warns))
         emit("{} have something that will cause a correction".format(fails))
-        return {"clean": clean, "warn": warns, "fail": fails}
+        if unreadable:
+            emit("{} record(s) could not be read at all, so nothing is "
+                 "claimed about them".format(unreadable))
+        return {"clean": clean, "warn": warns, "fail": fails,
+                "unreadable": unreadable}
 
     def abstracts(emit):
         works = [w for w in discover.from_orcid(orcid) if w["doi"]]
