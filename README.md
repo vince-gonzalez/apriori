@@ -15,6 +15,33 @@
 
 Reconciles a body of published work against every place it lives.
 
+## For any ORCID
+
+Discovery used to require your own Zenodo token, because it read the deposit
+endpoint, which only ever returns the records belonging to the token. A tool
+that asks *does every place your work lives still agree with the others* could
+not be pointed at anyone but its author.
+
+Nothing about that question is personal, so it takes an ORCID now:
+
+```
+pip install authorecon
+authorecon-discover 0000-0002-1825-0097 --out works.json
+```
+
+The sources are public and need no key: the **ORCID** record for what the
+author says they published, **OpenAlex** for what the literature says and who
+has cited it, and **Wikidata** for whether an item exists per DOI.
+
+It reports what it could not do as plainly as what it did. Every number
+reconciles: `1972 indexed = 1649 with a DOI + 323 without`. A mistyped ORCID is
+rejected against its ISO 7064 check digit before a single request is made,
+because an identifier that is one character wrong otherwise returns nothing and
+reads as a career that never happened.
+
+The private path still exists and still sees more - drafts, unsubmitted
+deposits, everything only a token can reach.
+
 Publishing is easy. Keeping twenty-nine deposits, twenty-eight Wikidata items,
 three OEIS sequences and a hundred-odd citation edges in agreement with each
 other is the part that gets harder every time you publish. This does that part.
