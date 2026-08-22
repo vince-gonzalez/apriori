@@ -324,6 +324,48 @@ def agreement(title, ref):
     return best
 
 
+#: Words that introduce somebody who is not the author of the work being
+#: cited. A record whose whole title is "Gayatri Chakravorty Spivak" scored
+#: a perfect match against a citation of Of Grammatology, because the
+#: translator is credited there by name.
+CREDITS = re.compile(
+    r"(translated\s+by|edited\s+by|trans\.|ed\.|eds\.|introduction\s+by|"
+    r"foreword\s+by|with\s+a\s+preface)\s*$", re.I)
+
+
+def matched_a_credit(title, ref):
+    """Does the matched title sit where a translator or editor is named?"""
+    flat_t, flat_r = skeleton(title), skeleton(ref)
+    if not flat_t or flat_t not in flat_r:
+        return False
+    # Walk back through the original text to whatever precedes the match.
+    lowered = (ref or "").lower()
+    needle = (title or "").strip().lower()
+    at = lowered.find(needle[:24]) if len(needle) >= 8 else -1
+    if at <= 0:
+        return False
+    return bool(CREDITS.search(lowered[max(0, at - 30):at]))
+
+
+#: An imprint: a city, a publisher, then the year.
+#:
+#: Written without the year this matched any title carrying a colon.
+#: "Gender: A Useful Category of Historical Analysis" reads exactly like
+#: "London: Verso" to a regular expression, and a journal article was
+#: downgraded for having a subtitle.
+IMPRINT = re.compile(
+    r"[A-Z][A-Za-z.]+(?:\s+[A-Z][A-Za-z.]+)*\s*:\s*"      # New York:
+    r"[A-Z][^,;]{2,44},\s*(?:19|20)\d{2}")                # Verso, 1977
+
+
+def looks_like_a_book(ref):
+    """Cited with a publisher and no volume, which is how a book is
+    cited."""
+    if re.search(r"\d+\s*\(\d+\)|vol\.|no\.\s*\d+\s*\(", ref or ""):
+        return False
+    return bool(IMPRINT.search(ref or ''))
+
+
 def verdict(score):
     if score >= AGREES:
         return "agrees"
@@ -534,7 +576,23 @@ def check_one(ref):
             return out
         if best and verdict(best["score"]) == "agrees":
             out["found"] = best["rec"]
-            if year_agrees(year, best["rec"]["year"]):
+            rec = best["rec"]
+            if matched_a_credit(rec["title"], ref):
+                # What matched is a person named in the citation for a
+                # reason other than authorship.
+                out["state"] = REVIEW
+                out["says"] = ("The closest record's title is a name this "
+                               "reference credits as a translator or editor "
+                               "rather than the work itself.")
+            elif looks_like_a_book(ref) and rec["type"] == "journal-article":
+                # Journals review books, and the review carries a DOI where
+                # the book often does not. Matching one to the other is the
+                # commonest way a humanities citation goes wrong here.
+                out["state"] = REVIEW
+                out["says"] = ("This is cited as a book and the closest "
+                               "record is a journal article, which is often "
+                               "a review of the book rather than the book.")
+            elif year_agrees(year, rec["year"]):
                 out["state"] = LOCATED
                 out["says"] = ("No identifier was given in the reference. "
                                "This is the record that matches it.")

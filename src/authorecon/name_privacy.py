@@ -84,13 +84,35 @@ PARTICLES = {"van", "von", "de", "del", "della", "di", "da", "dos", "du",
              "st", "saint", "ter", "ten", "op"}
 
 
+#: Letters that are routinely written two ways in the same person's name.
+#: A German passport spells it Müller and an American index spells it
+#: Mueller, and reporting those as two people would be the rule accusing
+#: somebody of a name change they never made.
+EXPANSIONS = {
+    "ä": "ae", "ö": "oe", "ü": "ue", "ß": "ss",
+    "æ": "ae", "ø": "oe", "œ": "oe", "å": "aa",
+}
+
+
 def fold(text):
-    """Compare names without accents, punctuation or case standing in."""
+    """
+    Compare names without case, accents, punctuation or writing system
+    standing in for a difference.
+
+    Written as [^a-z\\s] this returned an empty string for every name in
+    Cyrillic, Chinese or Arabic, so the rule about former names never fired
+    for any of them - the people it protects least being the ones an index
+    is most likely to have filed twice.
+    """
     if not text:
         return ""
-    flat = unicodedata.normalize("NFKD", str(text))
+    flat = str(text).lower()
+    for char, spelled in EXPANSIONS.items():
+        flat = flat.replace(char, spelled)
+    flat = unicodedata.normalize("NFKD", flat)
     flat = "".join(c for c in flat if not unicodedata.combining(c))
-    return re.sub(r"[^a-z\s]", " ", flat.lower()).strip()
+    kept = "".join(c if (c.isalpha() or c.isspace()) else " " for c in flat)
+    return re.sub(r"\s+", " ", kept).strip()
 
 
 def surname(name):
@@ -106,9 +128,25 @@ def surname(name):
     if "," in str(name):
         return re.sub(r"\s+", " ", fold(str(name).split(",")[0])).strip()
 
+    # Chinese, Japanese and Korean names written in their own characters put
+    # the family name first and use no spaces, so neither the last token nor
+    # the whole string is the surname.
+    if any("㐀" <= c <= "鿿" for c in flat):
+        return flat.replace(" ", "")[:1]
+
     parts = [p for p in flat.split() if p]
     if not parts:
         return ""
+
+    # Initials are not part of the name being compared. Dropping them first
+    # is what makes "Каминский Ю.В." and "Каминский Ю." one person: Russian
+    # writes the surname first, so taking the last token took an initial.
+    named = [p for p in parts if len(p) > 1]
+    if len(named) == 1:
+        return named[0]
+    if named:
+        parts = named
+
     # Walk back over any particles so a compound surname stays whole.
     i = len(parts) - 1
     while i > 0 and parts[i - 1] in PARTICLES:
