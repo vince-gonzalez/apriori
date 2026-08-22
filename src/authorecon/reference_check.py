@@ -89,6 +89,7 @@ RETRACTED = "retracted"
 UNCHECKED = "unchecked"
 UNTITLED = "untitled"
 OTHER_SCRIPT = "other script"
+ARCHIVAL = "archival"
 
 #: A title present as one run is a citation. Words gathered from an author
 #: list and a journal name are a coincidence. Half is where one becomes the
@@ -194,6 +195,38 @@ def carries_a_title(ref):
         if len(re.findall(r"[A-Za-z]{2,}", part)) >= 4:
             return True
     return False
+
+
+#: Words that name a place documents are kept rather than a work that was
+#: published, and the shelfmarks that point at a box on a shelf.
+REPOSITORY = re.compile(
+    r"\b(national archives|state archives|public record office|record office|"
+    r"special collections|manuscripts? (?:division|collection|department)|"
+    r"archives?|archivo|archiv|fonds|repository|muniments)\b", re.I)
+
+SHELFMARK = re.compile(
+    r"\b(?:[A-Z]{2,4}\s?\d+/\d+"          # CO 137/183
+    r"|MSS?\.?\s?\d+"                      # MS 4521
+    r"|box\s+\d+"                           # Box 12
+    r"|folder\s+\d+"                        # Folder 3
+    r"|carton\s+\d+"
+    r"|f(?:ol)?s?\.\s?\d+[rv]\b)", re.I)   # fol. 12r
+
+
+def looks_archival(ref):
+    """
+    Is this a document in an archive rather than a published work?
+
+    An archival citation names a repository and a shelfmark. Nothing about
+    it is in a literature index, so a search returns whatever is nearest -
+    a citation of a box in the National Archives matched a published
+    finding aid about that collection, at a perfect score.
+
+    Both signals are required. "Archives" alone appears in plenty of
+    journal names, and a shelfmark pattern alone catches volume numbers.
+    """
+    text = ref or ""
+    return bool(REPOSITORY.search(text)) and bool(SHELFMARK.search(text))
 
 
 def find_doi(ref):
@@ -540,6 +573,13 @@ def check_one(ref):
             out["says"] = ("The ISBN is catalogued, under a different title "
                            "from the one written here.")
 
+    elif looks_archival(ref):
+        out["state"] = ARCHIVAL
+        out["says"] = ("This cites a document held in an archive rather than "
+                       "a published work. Literature indexes do not hold "
+                       "these, so nothing here can confirm or doubt it; the "
+                       "repository named is the only place that can.")
+
     else:
         # Crossref first, then the indexes that hold what Crossref does not
         # - and only if the one before it did not already settle the matter.
@@ -662,7 +702,7 @@ def run(text, log=print):
 
 
 ORDER = [CONFIRMED, LOCATED, REVIEW, UNTITLED, OTHER_SCRIPT,
-         DIVERGENT, UNLOCATABLE, RETRACTED, UNCHECKED]
+         ARCHIVAL, DIVERGENT, UNLOCATABLE, RETRACTED, UNCHECKED]
 
 
 def report(rows, log=print):
