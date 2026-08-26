@@ -25,4 +25,4 @@ No dependencies. Standard library only.
 #: wheel filename and its metadata both come from pyproject, so they agree
 #: with each other while the code inside reports something else, and the
 #: mismatch is invisible from outside the wheel.
-__version__ = "1.0.0"
+__version__ = "1.1.0"

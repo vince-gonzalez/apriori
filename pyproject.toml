@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "authorecon"
-version = "1.0.0"
+version = "1.1.0"
 description = "Reconcile a body of published work against every place it lives - for any ORCID, from public sources - plus the gates that run before research output leaves your hands."
 readme = "README-pypi.md"
 requires-python = ">=3.10"
@@ -41,6 +41,9 @@ dependencies = []
 # Only abstract-op's PDF source needs this. Every other tool,
 # and every other source abstract-op reads, is standard library.
 pdf = ["pypdf>=4"]
+# The MCP server is optional so the reconciliation tools stay entirely
+# dependency-free for anyone who only wants the command line.
+mcp = ["mcp>=2.0"]
 
 [project.urls]
 Homepage = "https://github.com/vince-gonzalez/apriori"
@@ -49,6 +52,7 @@ Issues = "https://github.com/vince-gonzalez/apriori/issues"
 
 [project.scripts]
 authorecon-reference-check = "authorecon.reference_check:main"
+authorecon-mcp = "authorecon.mcp_server:main"
 authorecon-report = "authorecon.report:main"
 authorecon-discover = "authorecon.discover:main"
 authorecon-qikstgen = "authorecon.qikstgen:main"

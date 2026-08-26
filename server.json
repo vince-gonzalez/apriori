@@ -1,0 +1,42 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.zengineco/authorecon",
+  "title": "authorecon",
+  "description": "Resolves a bibliography or a published record against Crossref, DataCite, OpenAlex, Europe PMC, PubMed, Zenodo and ORCID: which references actually exist, what has been retracted, what is stuck outside the indexes.",
+  "version": "1.1.0",
+  "websiteUrl": "https://epistemend.org/",
+  "repository": {
+    "url": "https://github.com/zengineco/authorecon",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "authorecon",
+      "version": "1.1.0",
+      "runtimeHint": "uvx",
+      "runtimeArguments": [
+        {
+          "type": "named",
+          "name": "--from",
+          "value": "authorecon[mcp]",
+          "isRequired": true,
+          "description": "The MCP server lives behind an optional dependency so the reconciliation tools stay entirely dependency-free for anyone who only wants the command line."
+        }
+      ],
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "authorecon-mcp",
+          "isRequired": true,
+          "description": "Starts the stdio server. The package's other entry points run the individual command-line tools."
+        }
+      ],
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": []
+    }
+  ]
+}
