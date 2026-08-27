@@ -145,6 +145,14 @@ def build(orcid, log=print):
             emit("{} external, {} from the author's own work".format(
                 external, mine))
             emit("External citations are the evidence somebody else read it.")
+        # This is a floor, not a count. It is bounded by what the indexes have
+        # ingested, and the next section of this same report measures how far
+        # behind that ingestion runs. A report that reconciles other people's
+        # records against each other has no business quoting one of its own
+        # numbers as settled when it can see the lag itself.
+        emit("A floor, not a total: only citations the indexes have already "
+             "ingested can be counted, and recent work is undercounted by "
+             "however far behind they are running.")
         return {"external": external, "self": mine}
 
     def timing(emit):
