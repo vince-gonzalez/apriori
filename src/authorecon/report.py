@@ -106,8 +106,15 @@ def build(orcid, log=print):
         doc = discover.discover(orcid, with_wikidata=False, log=quiet)
         works = doc["works"]
         unclaimed = [w for w in works if w.get("unclaimed")]
-        indexed = [w for w in works if w.get("in_openalex")]
-        emit("{} works on the ORCID record".format(len(works) - len(unclaimed)))
+        on_record = [w for w in works if not w.get("unclaimed")]
+        # "of them" means the works ON THE RECORD, so it has to be counted
+        # from those. It was counted from every work discovered, unclaimed
+        # ones included, which produced "6 works on the ORCID record" and
+        # "1600 of them are indexed" one line apart. A report that
+        # contradicts itself in two adjacent sentences is not read further,
+        # and this one is paid for.
+        indexed = [w for w in on_record if w.get("in_openalex")]
+        emit("{} works on the ORCID record".format(len(on_record)))
         # Two different questions, and conflating them made three sections of
         # this report disagree. "Attributed" asks OpenAlex what it files under
         # this ORCID. "Indexed" asks whether the work is there at all. The
