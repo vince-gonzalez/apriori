@@ -295,6 +295,7 @@ def build(orcid, log=print):
         looked = dois[:cap]
         disagreed = []
         unreadable = 0
+        silent = 0
         for d in looked:
             try:
                 out = pdf_conform.check(d, log=quiet, quiet=True)
@@ -309,33 +310,67 @@ def build(orcid, log=print):
             if not out:
                 unreadable += 1
                 continue
-            bad = [f for f in (out.get("findings") or [])
-                   if len(f) > 1 and f[1] != "match"]
-            if bad:
-                disagreed.append((d, bad))
 
+            # pdf_conform already draws the line this section needs:
+            # INFORMATIONAL = ("doi", "version"). A preprint usually does
+            # not print its own DOI inside itself, so "doi not found" fires
+            # on nearly every deposit and says almost nothing. Reporting it
+            # per-document trained the reader to skim, which is worse than
+            # not reporting it, because the one line that matters is in the
+            # same list.
+            notable = [f for f in (out.get("findings") or [])
+                       if len(f) > 2 and f[0] not in pdf_conform.INFORMATIONAL
+                       and f[1] != pdf_conform.MATCH]
+
+            # THIS is the finding worth having: another deposit's identifier
+            # printed inside this file. It means a file was reused across
+            # records, which is a real mix-up rather than a formatting habit.
+            foreign = sorted(out.get("foreign") or [])
+
+            if notable or foreign:
+                disagreed.append((d, notable, foreign))
+            elif any(f[0] == "doi" and f[1] != pdf_conform.MATCH
+                     for f in (out.get("findings") or []) if len(f) > 1):
+                silent += 1
+
+        opened = len(looked) - unreadable
         emit("{} document(s) opened and compared with their record"
-             .format(len(looked) - unreadable))
+             .format(opened))
+        # Stated, never implied. Without this line a record of 57 works
+        # reports on 15 and reads as though that were all of them, which
+        # is the silent omission this whole document exists to refuse.
         if len(dois) > cap:
-            emit("{} of {} checked; the rest were not opened"
+            emit("{} of {} works with a DOI were opened; the rest were not"
                  .format(cap, len(dois)))
         if unreadable:
-            emit("{} could not be opened, so nothing is claimed about them"
+            emit("{} had no readable file, so nothing is claimed about them"
                  .format(unreadable))
-        # Only claimable if something was actually opened. The first version
-        # said "every document opened agrees" after opening none, which is
-        # success reported by default -- the one thing the rule at the top of
-        # this file forbids, written by the person who wrote the rule.
-        opened = len(looked) - unreadable
-        if not disagreed and opened:
-            emit("Every document opened agrees with the record describing it.")
-        elif not opened:
+
+        if not opened:
             emit("Nothing could be opened, so nothing is claimed either way.")
-        for d, bad in disagreed:
-            emit("{}".format(d))
-            for f in bad:
-                emit("   {} {}: {}".format(f[1], f[0], f[2] if len(f) > 2 else ""))
-        return {"checked": len(looked), "disagreed": len(disagreed)}
+        elif not disagreed:
+            emit("Every document opened agrees with the record describing it.")
+
+        for d, notable, foreign in disagreed:
+            emit(d)
+            for f in notable:
+                emit("   the file does not carry the {} its record gives: {}"
+                     .format(f[0], str(f[2])[:58]))
+            for other in foreign:
+                emit("   this file prints another deposit's identifier: {}"
+                     .format(other))
+            if foreign:
+                emit("   a file carrying another record's identifier was "
+                     "probably reused")
+
+        if silent:
+            emit("")
+            emit("{} document(s) do not print their own DOI. That is ordinary "
+                 "for a deposited manuscript and is not counted as a "
+                 "disagreement.".format(silent))
+
+        return {"checked": len(looked), "opened": opened,
+                "disagreed": len(disagreed), "doi_absent": silent}
 
     def wikidata_actions(emit):
         """Works with no Wikidata item, and the statements that would create one.
