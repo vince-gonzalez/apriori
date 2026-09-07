@@ -301,6 +301,14 @@ def build(orcid, log=print):
             except Exception:                        # noqa: BLE001
                 unreadable += 1
                 continue
+            # check() returns None for a record with no readable file rather
+            # than raising, so the guard above does not catch it. Reading
+            # .get on that None took down the whole section on the first
+            # real record it met -- a check that cannot run must degrade to
+            # "not checked", never to a dead section.
+            if not out:
+                unreadable += 1
+                continue
             bad = [f for f in (out.get("findings") or [])
                    if len(f) > 1 and f[1] != "match"]
             if bad:
