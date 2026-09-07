@@ -44,8 +44,8 @@ import sys
 import time
 
 from . import (abstract_op, name_privacy, citation_resolve, deposit_lint, discover,
-               index_lag, orcid_collision, retraction_watch, self_citation,
-               venue_reality, wd_sweeper)
+               index_lag, orcid_collision, pdf_conform, qikstgen,
+               retraction_watch, self_citation, venue_reality, wd_sweeper)
 from .discover import Problem, normalise_orcid, valid_checksum
 
 RULE = "  " + "-" * 66
@@ -269,6 +269,90 @@ def build(orcid, log=print):
                 len({u[0] for u in unchecked})))
         return {"authored": len(authored), "cited": len(cited)}
 
+
+    def documents(emit):
+        """Does the deposited file agree with the record describing it?
+
+        Everything above reads metadata. This opens the document itself
+        and compares what it says with what its record claims -- the
+        title, the authors, the version, and whether the file states its
+        own DOI. A record can be immaculate while the PDF under it is a
+        different draft.
+
+        Capped, and the cap is stated rather than hidden: each document
+        is fetched and read, which costs seconds, and a long record would
+        otherwise turn a report into a timeout.
+        """
+        doc = discover.discover(orcid, with_wikidata=False, log=quiet)
+        dois = [w.get("doi") for w in doc["works"]
+                if w.get("doi") and not w.get("unclaimed")]
+        if not dois:
+            emit("No work on the record carries a DOI, so there is no "
+                 "document to open.")
+            return {"checked": 0}
+
+        cap = 15
+        looked = dois[:cap]
+        disagreed = []
+        unreadable = 0
+        for d in looked:
+            try:
+                out = pdf_conform.check(d, log=quiet, quiet=True)
+            except Exception:                        # noqa: BLE001
+                unreadable += 1
+                continue
+            bad = [f for f in (out.get("findings") or [])
+                   if len(f) > 1 and f[1] != "match"]
+            if bad:
+                disagreed.append((d, bad))
+
+        emit("{} document(s) opened and compared with their record"
+             .format(len(looked) - unreadable))
+        if len(dois) > cap:
+            emit("{} of {} checked; the rest were not opened"
+                 .format(cap, len(dois)))
+        if unreadable:
+            emit("{} could not be opened, so nothing is claimed about them"
+                 .format(unreadable))
+        # Only claimable if something was actually opened. The first version
+        # said "every document opened agrees" after opening none, which is
+        # success reported by default -- the one thing the rule at the top of
+        # this file forbids, written by the person who wrote the rule.
+        opened = len(looked) - unreadable
+        if not disagreed and opened:
+            emit("Every document opened agrees with the record describing it.")
+        elif not opened:
+            emit("Nothing could be opened, so nothing is claimed either way.")
+        for d, bad in disagreed:
+            emit("{}".format(d))
+            for f in bad:
+                emit("   {} {}: {}".format(f[1], f[0], f[2] if len(f) > 2 else ""))
+        return {"checked": len(looked), "disagreed": len(disagreed)}
+
+    def wikidata_actions(emit):
+        """Works with no Wikidata item, and the statements that would create one.
+
+        The knowledge graph section says what is missing. This says what
+        to do about it, which is a different and more useful thing to be
+        handed.
+        """
+        batch, skipped, existing = qikstgen.generate(orcid, log=quiet, limit=25)
+        emit("{} work(s) already have a Wikidata item".format(existing))
+        emit("{} could have one created from what is already published"
+             .format(len(batch)))
+        if skipped:
+            emit("{} cannot, for the reasons below".format(len(skipped)))
+            for title, why in skipped[:8]:
+                emit("   {}  <- {}".format((title or "?")[:44], why))
+        if batch:
+            emit("")
+            emit("QuickStatements for the first of them, ready to paste at "
+                 "quickstatements.toolforge.org:")
+            for line in (batch[0][2] or [])[:12]:
+                emit("   " + str(line))
+        return {"existing": existing, "creatable": len(batch),
+                "skipped": len(skipped)}
+
     checks = [
         ("IDENTITY", identity),
         ("THE RECORD", record),
@@ -280,6 +364,8 @@ def build(orcid, log=print):
         ("ABSTRACTS", abstracts),
         ("OUTBOUND LINKS", links),
         ("RETRACTIONS", retractions),
+        ("THE DOCUMENTS THEMSELVES", documents),
+        ("WIKIDATA: WHAT COULD BE CREATED", wikidata_actions),
     ]
     for title, fn in checks:
         sections.append(run_one(title, fn, log))
