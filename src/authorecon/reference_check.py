@@ -179,6 +179,14 @@ def carries_a_title(ref):
     a citation might be fabricated when the citation was merely terse - 101
     of 118 apparent failures in a run of a thousand were this.
     """
+    return likely_title(ref) is not None
+
+
+def likely_title(ref):
+    """The phrase in a reference that reads as its title, or None.
+
+    The same test carries_a_title() has always made, returning the phrase
+    it found so a title-only search can be asked for it."""
     after = re.split(r"\(\d{4}[a-z]?\)", ref or "", maxsplit=1)
     tail = (after[1] if len(after) > 1 else (ref or "")).strip(" .,")
 
@@ -193,8 +201,8 @@ def carries_a_title(ref):
         if re.search(r"\d+\s*[:,]?\s*\d+\s*[-–—]?\s*\d*$", part):
             continue                      # journal, volume and pages
         if len(re.findall(r"[A-Za-z]{2,}", part)) >= 4:
-            return True
-    return False
+            return part
+    return None
 
 
 #: Words that name a place documents are kept rather than a work that was
@@ -346,10 +354,19 @@ def _ratio(title, ref):
     return longest_run(t, r) / float(len(t))
 
 
+#: What a publisher puts in front of a title when the work is withdrawn.
+#: Left on, it cost the retracted Wakefield paper the match it had earned:
+#: the prefix lowered its score below a same-title letter printed five
+#: months later, the letter won, and the retraction went unreported.
+RETRACTION_PREFIX = re.compile(
+    r"^\s*(?:retracted(?:\s+article)?|withdrawn)\s*[:.\-–—]\s*", re.I)
+
+
 def agreement(title, ref):
     """Read against the main title as well as the whole one, because a
     correct reference to a work should not be called wrong for omitting the
     eight words after its colon."""
+    title = RETRACTION_PREFIX.sub("", title or "")
     best = _ratio(title, ref)
     main = re.split(r"[:;]|\s[-–—]\s", title or "")[0].strip()
     if main and main != title and len(skeleton(main)) >= 12:
@@ -417,12 +434,15 @@ def _record(doi, title, authors, year, venue, source, kind=""):
 
 def from_crossref(m):
     parts = ((m.get("issued") or {}).get("date-parts") or [[]])[0]
-    return _record(
+    rec = _record(
         m.get("DOI"), (m.get("title") or [""])[0],
         [a.get("family") or a.get("name") for a in (m.get("author") or [])],
         parts[0] if parts else None,
         (m.get("container-title") or [""])[0] or m.get("publisher", ""),
         "Crossref", m.get("type", ""))
+    rec["page"] = m.get("page") or ""
+    rec["volume"] = m.get("volume") or ""
+    return rec
 
 
 def from_datacite(d):
@@ -464,7 +484,8 @@ def by_doi(doi):
 def search_crossref(ref):
     url = CROSSREF + "?" + _q({
         "rows": "3", "query.bibliographic": ref[:400],
-        "select": "DOI,title,author,issued,container-title,publisher,type"})
+        "select": "DOI,title,author,issued,container-title,publisher,type,"
+                  "page,volume"})
     try:
         return [from_crossref(i)
                 for i in (fetch(url).get("message") or {}).get("items") or []]
@@ -504,6 +525,44 @@ def search_pubmed(ref):
         found = search_europepmc("EXT_ID:" + pmid)
         out.extend(found)
     return out
+
+
+def search_arxiv(ref):
+    """Machine-learning conference papers often have no DOI of their own.
+    NeurIPS publishes without one, and a junk record sharing the title
+    turned up in Crossref instead: "Attention Is All You Need", cited as
+    2017, was matched to a 2025 upload and marked for review. The arXiv
+    copy is the record, registered at DataCite. Asked last, by title and
+    year only, because a whole reference string buried it under uploads
+    that borrow the famous title."""
+    title = likely_title(ref)
+    if not title:
+        return []
+    query = 'titles.title:"{}"'.format(re.sub(r'["\\]', " ", title)[:200])
+    year = find_year(ref)
+    if year:
+        query += " AND publicationYear:[{} TO {}]".format(year - 1, year + 1)
+    url = DATACITE.rstrip("/") + "?" + urllib.parse.urlencode(
+        {"query": query, "client-id": "arxiv.content", "page[size]": "3"})
+    try:
+        return [from_datacite(d) for d in (fetch(url).get("data") or [])]
+    except Problem:
+        raise Unreachable("DataCite did not answer")
+
+
+def locator_agrees(rec, ref):
+    """Same title and same year, and still two records: an article and the
+    letter answering it, or a reprint. The first page the reference gives
+    settles which one it means; the volume does when the record has none."""
+    first = re.match(r"\s*([A-Za-z]?\d+)", str(rec.get("page") or ""))
+    if first:
+        return bool(re.search(r"(?<!\d)" + re.escape(first.group(1)) +
+                              r"(?!\d)", ref or ""))
+    vol = str(rec.get("volume") or "").strip()
+    if vol:
+        return bool(re.search(r"(?<!\d)" + re.escape(vol) + r"(?!\d)",
+                              ref or ""))
+    return False
 
 
 def by_isbn(isbn):
@@ -586,17 +645,24 @@ def check_one(ref):
         # Asking all three every time was three requests to answer a question
         # the first had answered, on every reference in every document.
         def rank(records):
-            return sorted(
-                ({"rec": c, "score": agreement(c["title"], ref),
-                  "solid": verdict(agreement(c["title"], ref)) == "agrees"
-                           and year_agrees(year, c["year"])}
-                 for c in records),
-                key=lambda x: (not x["solid"], -x["score"]))
+            scored = []
+            for c in records:
+                score = agreement(c["title"], ref)
+                solid = verdict(score) == "agrees" and year_agrees(year,
+                                                                   c["year"])
+                scored.append({"rec": c, "score": score, "solid": solid,
+                               "pinned": solid and locator_agrees(c, ref)})
+            # Among records that agree on title and year, the one whose
+            # pages match the reference comes first.
+            return sorted(scored, key=lambda x: (not x["solid"],
+                                                 not x["pinned"],
+                                                 -x["score"]))
 
         best = None
         seen = []
         answered = 0
-        for source in (search_crossref, search_europepmc, search_pubmed):
+        for source in (search_crossref, search_europepmc, search_pubmed,
+                       search_arxiv):
             try:
                 seen += source(ref)
                 answered += 1
